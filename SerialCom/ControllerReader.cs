@@ -15,10 +15,11 @@ namespace SerialCom
         State state;
 
         Dictionary<GamepadButtonFlags, bool> prevButtonState;
+        Dictionary<GamepadButtonFlags, short> buttonMapping;
         
         public ControllerReader()
         {
-            controller = new Controller(UserIndex.One);
+            controller = new Controller(UserIndex.Four);
 
             Setup();
 
@@ -35,20 +36,29 @@ namespace SerialCom
         {
             prevButtonState = new Dictionary<GamepadButtonFlags, bool>();
 
-            prevButtonState.Add(GamepadButtonFlags.A, false);
-            prevButtonState.Add(GamepadButtonFlags.B, false);
-            prevButtonState.Add(GamepadButtonFlags.X, false);
-            prevButtonState.Add(GamepadButtonFlags.Y, false);
-            prevButtonState.Add(GamepadButtonFlags.DPadUp, false);
-            prevButtonState.Add(GamepadButtonFlags.DPadDown, false);
-            prevButtonState.Add(GamepadButtonFlags.DPadLeft, false);
-            prevButtonState.Add(GamepadButtonFlags.DPadRight, false);
-            prevButtonState.Add(GamepadButtonFlags.Start, false);
-            prevButtonState.Add(GamepadButtonFlags.Back, false);
-            prevButtonState.Add(GamepadButtonFlags.LeftShoulder, false);
-            prevButtonState.Add(GamepadButtonFlags.LeftThumb, false);
-            prevButtonState.Add(GamepadButtonFlags.RightShoulder, false);
-            prevButtonState.Add(GamepadButtonFlags.RightThumb, false);
+            short counter = 0;
+
+            foreach(GamepadButtonFlags temp in Enum.GetValues(typeof(GamepadButtonFlags)))
+            {
+                prevButtonState.Add(temp, false);
+            }
+
+            buttonMapping = new Dictionary<GamepadButtonFlags, short>();
+
+            buttonMapping.Add(GamepadButtonFlags.A, 1);
+            buttonMapping.Add(GamepadButtonFlags.B, 2);
+            buttonMapping.Add(GamepadButtonFlags.X, 3);
+            buttonMapping.Add(GamepadButtonFlags.Y, 4);
+            buttonMapping.Add(GamepadButtonFlags.LeftShoulder, 5);
+            buttonMapping.Add(GamepadButtonFlags.RightShoulder, 6);
+            buttonMapping.Add(GamepadButtonFlags.Back, 7);
+            buttonMapping.Add(GamepadButtonFlags.Start, 8);
+            buttonMapping.Add(GamepadButtonFlags.LeftThumb, 9);
+            buttonMapping.Add(GamepadButtonFlags.RightThumb, 10);
+            buttonMapping.Add(GamepadButtonFlags.DPadUp, 11);
+            buttonMapping.Add(GamepadButtonFlags.DPadDown, 12); 
+            buttonMapping.Add(GamepadButtonFlags.DPadLeft, 13);
+            buttonMapping.Add(GamepadButtonFlags.DPadRight, 14);
         }
 
         void Update(Object source, ElapsedEventArgs e)
@@ -71,21 +81,10 @@ namespace SerialCom
 
         void updateButtons()
         {
-            updateButton(0,GamepadButtonFlags.A);
-            updateButton(1, GamepadButtonFlags.B);
-            updateButton(2, GamepadButtonFlags.X);
-            updateButton(3, GamepadButtonFlags.Y);
-            updateButton(4, GamepadButtonFlags.DPadUp);
-            updateButton(5, GamepadButtonFlags.DPadDown);
-            updateButton(6, GamepadButtonFlags.DPadLeft);
-            updateButton(7, GamepadButtonFlags.DPadRight);
-            updateButton(8, GamepadButtonFlags.Start);
-            updateButton(9, GamepadButtonFlags.Back);
-            updateButton(10, GamepadButtonFlags.LeftShoulder);
-            updateButton(11, GamepadButtonFlags.LeftThumb);
-            updateButton(12, GamepadButtonFlags.RightShoulder);
-            updateButton(13, GamepadButtonFlags.RightThumb);
-
+            foreach(KeyValuePair<GamepadButtonFlags, short> entry in buttonMapping)
+            {
+                updateButton(entry.Value, entry.Key);
+            }
         }
 
         void updateStick(short selection, short val)
