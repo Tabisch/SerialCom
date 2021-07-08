@@ -16,10 +16,11 @@ namespace SerialCom
 
         Dictionary<GamepadButtonFlags, bool> prevButtonState;
         Dictionary<GamepadButtonFlags, short> buttonMapping;
+        //Dictionary<>
         
         public ControllerReader()
         {
-            controller = new Controller(UserIndex.Four);
+            controller = new Controller(UserIndex.One);
 
             Setup();
 
@@ -95,9 +96,9 @@ namespace SerialCom
         void updateSticks()
         {
             updateStick(14, state.Gamepad.LeftThumbX);
-            updateStick(15, state.Gamepad.LeftThumbY);
-            updateStick(16, state.Gamepad.RightThumbX);
-            updateStick(17, state.Gamepad.RightThumbY);
+            updateStick(14, state.Gamepad.LeftThumbY);
+            updateStick(15, state.Gamepad.RightThumbX);
+            updateStick(15, state.Gamepad.RightThumbY);
         }
 
         void updateTrigger(short selection, short val)
@@ -107,8 +108,8 @@ namespace SerialCom
 
         void updateTriggers()
         {
-            updateTrigger(18,(short)state.Gamepad.LeftTrigger);
-            updateTrigger(19, (short)state.Gamepad.RightTrigger);
+            updateTrigger(16,(short)state.Gamepad.LeftTrigger);
+            updateTrigger(17, (short)state.Gamepad.RightTrigger);
         }
     }
 }

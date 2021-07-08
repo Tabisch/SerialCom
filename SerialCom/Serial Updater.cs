@@ -23,8 +23,6 @@ namespace SerialCom
 
         public static void writeToSerial()
         {
-            SerialSetup();
-
             while (true)
             {
                 if (cacq.Count > 0)
@@ -47,7 +45,7 @@ namespace SerialCom
             }
         }
 
-        static void SerialSetup()
+        public static void SerialSetup(string port)
         {
             serialPort = new SerialPort("COM4", 9600);
             serialPort.NewLine = "\n";
