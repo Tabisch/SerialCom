@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -11,56 +12,95 @@ namespace SerialCom
     class Serial_Updater
     {
         static SerialPort serialPort;
-        static Queue<ControllerActionCalls> cacq;
+        static ConcurrentQueue<ControllerActionCalls> cacq;
 
         static bool waitForAwnser = true;
 
+        static bool desynced = false;
 
-        public static void sendSerial(short selection, short message)
+        static int sleeptime = 10;
+
+        static int lastUpdate;
+
+
+        public static void sendSerial(short selection, short message, string info)
         {
-            cacq.Enqueue(new ControllerActionCalls(selection, message));
+            cacq.Enqueue(new ControllerActionCalls(selection, message, info));
+        }
+
+        public static bool getDesynced()
+        {
+            return desynced;
         }
 
         public static void writeToSerial()
         {
             while (true)
             {
+                if(desynced)
+                {
+                    Thread.Sleep(sleeptime);
+                    cacq.Clear();
+                    desynced = false;
+                    continue;
+                }
+
                 if (cacq.Count > 0)
                 {
-                    ControllerActionCalls temp = cacq.Dequeue();
+                    ControllerActionCalls temp;
+                    cacq.TryDequeue(out temp);
 
                     serialPort.WriteLine(temp.getSelection().ToString());
                     serialPort.WriteLine(temp.getInput().ToString());
-                    Console.WriteLine("Send: selection " + temp.getSelection().ToString() + " " + temp.getInput().ToString());
+                    Console.WriteLine("Send: selection " + temp.getSelection().ToString() + " " + temp.getInput().ToString() + " " + temp.getInfo());
+
+                    lastUpdate = Environment.TickCount;
+
+                    waitForAwnser = true;
 
                     while (waitForAwnser)
                     {
-                        Thread.Sleep(10);
+                        Thread.Sleep(sleeptime);
                     }
                 }
                 else
                 {
-                    Thread.Sleep(10);
+                    if(Environment.TickCount - lastUpdate > 1000)
+                    {
+                        sendSerial(-1,0, "Keep Alive");
+                        lastUpdate = Environment.TickCount;
+                    }
+
+                    Thread.Sleep(sleeptime);
                 }
             }
         }
 
         public static void SerialSetup(string port)
         {
-            serialPort = new SerialPort("COM4", 9600);
+            serialPort = new SerialPort(port, 19200);
             serialPort.NewLine = "\n";
             serialPort.DataReceived += dataReceived;
 
             serialPort.Open();
 
-            cacq = new Queue<ControllerActionCalls>();
+            cacq = new ConcurrentQueue<ControllerActionCalls>();
+
+            lastUpdate = Environment.TickCount;
         }
 
         static void dataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            waitForAwnser = false;
+            string temp = serialPort.ReadLine();
 
-            Console.WriteLine("Data Received: " + serialPort.ReadLine());
+            Console.WriteLine("Data Received: " + temp);
+
+            if(temp == "Desynced")
+            {
+                desynced = true;
+            }
+
+            waitForAwnser = false;
         }
     }
 }

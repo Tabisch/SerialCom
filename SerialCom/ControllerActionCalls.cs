@@ -10,11 +10,13 @@ namespace SerialCom
     {
         short selection;
         short input;
+        string info;
 
-        public ControllerActionCalls(short selection, short input)
+        public ControllerActionCalls(short selection, short input, string info)
         {
             this.selection = selection;
             this.input = input;
+            this.info = info;
         }
 
         public short getSelection()
@@ -25,6 +27,11 @@ namespace SerialCom
         public short getInput()
         {
             return input;
+        }
+
+        public string getInfo()
+        {
+            return info;
         }
     }
 }
