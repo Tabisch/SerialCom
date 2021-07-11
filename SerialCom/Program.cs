@@ -39,31 +39,35 @@ namespace SerialCom
                 }
             }
 
-
+            Console.WriteLine("Serial setup");
             Serial_Updater.SerialSetup(chosenPort);
 
             Thread su = new Thread(Serial_Updater.writeToSerial);
+            Console.WriteLine("Thread start");
             su.Start();
 
             Thread.Sleep(2000);
 
+            Console.WriteLine("Controller Reader");
             ControllerReader c = new ControllerReader();
 
             string temp = "";
 
             while (true)
             {
+                Console.WriteLine("Input");
                 temp = Console.ReadLine();
 
-                switch(temp)
+                switch(temp.ToLower())
                 {
                     case "exit":
+                        Environment.Exit(0);
                         break;
                     case "long":
                         pressHomeButton(1000);
                         break;
                     case "short":
-                        pressHomeButton(10);
+                        pressHomeButton(100);
                         break;
                 }
             }

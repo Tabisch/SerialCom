@@ -78,7 +78,7 @@ namespace SerialCom
 
             Console.WriteLine("Data Received: " + temp);
 
-            if(temp == "Desynced")
+            if(temp == "-1")
             {
                 desynced = true;
             }

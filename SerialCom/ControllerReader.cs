@@ -32,7 +32,7 @@ namespace SerialCom
 
             controller.GetState(out state);
 
-            timer = new Timer(50);
+            timer = new Timer(25);
 
             timer.Elapsed += Update;
             timer.AutoReset = true;
