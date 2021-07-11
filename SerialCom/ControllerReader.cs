@@ -26,7 +26,7 @@ namespace SerialCom
 
         public ControllerReader()
         {
-            controller = new Controller(UserIndex.Four);
+            controller = new Controller(UserIndex.One);
 
             Setup();
 

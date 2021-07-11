@@ -49,7 +49,31 @@ namespace SerialCom
 
             ControllerReader c = new ControllerReader();
 
-            Console.ReadLine();
+            string temp = "";
+
+            while (true)
+            {
+                temp = Console.ReadLine();
+
+                switch(temp)
+                {
+                    case "exit":
+                        break;
+                    case "long":
+                        pressHomeButton(1000);
+                        break;
+                    case "short":
+                        pressHomeButton(10);
+                        break;
+                }
+            }
+        }
+
+        static void pressHomeButton(int time)
+        {
+            Serial_Updater.sendSerial(0, 1, "Home");
+            Thread.Sleep(time);
+            Serial_Updater.sendSerial(0, 0, "Home");
         }
     }
 }
